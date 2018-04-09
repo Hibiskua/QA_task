@@ -2,6 +2,11 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import python_test.SeleniumObjects as selobj
+from python_test.SeleniumObjects import SeleniumObject, SelectorType
 import time
 
 class KiwiBooking(unittest.TestCase):
@@ -10,6 +15,7 @@ class KiwiBooking(unittest.TestCase):
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(15)
         self.action = ActionChains(self.driver)
+        self.wait = WebDriverWait(self.driver, 10)
 
     def test_search_let(self):
         driver = self.driver
@@ -35,10 +41,13 @@ class KiwiBooking(unittest.TestCase):
         london_airports[0].click()
 
         # click on first nabidka
-        offers = driver.find_elements_by_xpath("//*[@class='Journey-overview Journey-oneWay']")
-        offers[0].click()
-        rezervation_button = driver.find_element_by_xpath("//*[@data-test='JourneyBookingButton']")
+        #offers = driver.find_elements_by_xpath("//*[@class='Journey-overview Journey-oneWay']")
+        offers = SeleniumObject(driver, "//*[@class='Journey-overview Journey-oneWay']", SelectorType.xpath)
 
+        offers.click()
+        #rezervation_button = wait.until(EC.presence_of_element_located((By.XPATH,"//*[@data-test='JourneyBookingButton']")))
+        self.waitForElement("//*[@data-test='JourneyBookingButton']")
+        rezervation_button = driver.find_element_by_xpath("//*[@data-test='JourneyBookingButton']")
         action.move_to_element(rezervation_button).perform()
         #time.sleep(1)
         rezervation_button.click()
@@ -94,6 +103,10 @@ class KiwiBooking(unittest.TestCase):
         pay.click()
 
         driver.find_element_by_xpath("//*[@class='BookingThankyou-texts']").is_displayed()
+
+    def waitForElement(self, xpath):
+        wait = self.wait
+        wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
 
     def tearDown(self):
         self.driver.close()

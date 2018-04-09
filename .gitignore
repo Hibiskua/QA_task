@@ -1,0 +1,5 @@
+.idea
+cypress
+node_modules
+cypress.json
+*.log
